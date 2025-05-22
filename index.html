@@ -1,0 +1,1126 @@
+!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathMaster 3ème - Préparation au DNB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              math: {
+                primary: '#6366f1',
+                secondary: '#8b5cf6',
+                accent: '#ec4899',
+                dark: '#1e1b4b',
+                light: '#e0e7ff'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              math: ['"Roboto Slab"', 'serif']
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes wave {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .waving {
+            animation: wave 3s ease-in-out infinite;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        .slide-in {
+            animation: slideIn 0.3s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .math-formula {
+            font-family: 'Roboto Slab', serif;
+            background: rgba(224, 231, 255, 0.5);
+            border-left: 4px solid #6366f1;
+            padding: 0.5rem 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            background-size: 200% auto;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+        }
+        .hero-pattern {
+            background-image: radial-gradient(circle at 25% 25%, rgba(224, 231, 255, 0.5) 0%, rgba(224, 231, 255, 0) 50%);
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-math-light font-sans">
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-purple-200 opacity-20 blur-xl"></div>
+        <div class="absolute top-1/3 right-1/4 w-40 h-40 rounded-full bg-blue-200 opacity-20 blur-xl"></div>
+        <div class="absolute bottom-1/4 right-1/3 w-28 h-28 rounded-full bg-pink-200 opacity-20 blur-xl"></div>
+    </div>
+
+    <!-- Header with improved design -->
+    <header class="bg-math-dark text-white shadow-lg relative z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <i class="fas fa-square-root-alt text-3xl text-math-accent waving"></i>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full"></div>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-math-primary via-math-secondary to-math-accent bg-clip-text text-transparent">
+                    MathMaster <span class="text-white">3ème</span>
+                </h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="statsBtn" class="p-2 rounded-full hover:bg-math-primary transition-all transform hover:scale-110 group">
+                    <i class="fas fa-chart-line text-lg text-white group-hover:text-yellow-300 transition"></i>
+                </button>
+                <div class="relative">
+                    <button id="userBtn" class="flex items-center space-x-2 bg-math-primary px-4 py-2 rounded-full hover:bg-math-secondary transition-all shadow-md group">
+                        <span class="hidden md:inline font-medium">Mon Profil</span>
+                        <i class="fas fa-user text-white group-hover:animate-spin"></i>
+                    </button>
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-10 border border-gray-200 overflow-hidden">
+                        <div class="px-4 py-3 bg-math-primary">
+                            <p class="text-white font-medium">Élève de 3ème</p>
+                            <p class="text-math-light text-sm">Niveau: Avancé</p>
+                        </div>
+                        <div class="py-1">
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-math-light transition flex items-center">
+                                <i class="fas fa-cog mr-2 text-math-secondary"></i> Paramètres
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-math-light transition flex items-center">
+                                <i class="fas fa-trophy mr-2 text-yellow-500"></i> Mes badges
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-math-light transition flex items-center">
+                                <i class="fas fa-sign-out-alt mr-2 text-math-accent"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content with enhanced visual hierarchy -->
+    <main class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Welcome Banner with animation -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 hero-pattern">
+            <div class="md:flex">
+                <div class="p-6 md:p-8 flex-1">
+                    <h2 class="text-2xl md:text-3xl font-bold text-math-dark mb-2">Bonjour, <span class="text-math-primary">Élève</span> !</h2>
+                    <p class="text-gray-600 mb-4">Prêt à maîtriser les mathématiques pour le DNB ?</p>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn-gradient text-white px-6 py-2 rounded-lg font-medium shadow-md flex items-center">
+                            <i class="fas fa-play mr-2"></i> Continuer
+                        </button>
+                        <button class="bg-white border border-math-primary text-math-primary px-6 py-2 rounded-lg font-medium shadow-sm hover:bg-math-light flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Nouveau défi
+                        </button>
+                    </div>
+                </div>
+                <div class="hidden md:block md:w-1/3 relative overflow-hidden">
+                    <img src="https://illustrations.popsy.co/amber/student-sitting-at-desk.svg" alt="Student learning" class="absolute bottom-0 right-0 w-full h-auto floating" style="max-width: 80%;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnostic Banner with improved design -->
+        <div id="diagnosticBanner" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row justify-between items-center pulse">
+            <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-2">
+                    <div class="bg-white bg-opacity-20 p-2 rounded-full mr-3">
+                        <i class="fas fa-clipboard-check text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">Diagnostic initial recommandé</h3>
+                </div>
+                <p class="text-blue-100">Passez le test pour personnaliser votre parcours d'apprentissage</p>
+            </div>
+            <button id="startDiagnostic" class="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-medium shadow-md transition-all transform hover:scale-105 flex items-center">
+                <i class="fas fa-rocket mr-2"></i> Commencer
+            </button>
+        </div>
+
+        <!-- Dashboard Grid with enhanced cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Progress Summary with animated chart -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 glow-hover">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-math-dark">Votre progression</h2>
+                        <span class="bg-math-primary bg-opacity-10 text-math-primary text-xs font-medium px-2 py-1 rounded-full">+12% cette semaine</span>
+                    </div>
+                    <div class="flex justify-center mb-4">
+                        <div class="relative w-40 h-40">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-gray-200" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                <circle class="progress-ring__circle text-math-primary" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="100.48" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-3xl font-bold text-math-dark">60%</span>
+                                <span class="text-sm text-gray-500">complété</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-math-primary mr-2"></div>
+                                <span class="text-gray-600">Thèmes maîtrisés</span>
+                            </div>
+                            <span class="font-medium">4/10</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                                <span class="text-gray-600">Exercices réussis</span>
+                            </div>
+                            <span class="font-medium">78%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-math-secondary mr-2"></div>
+                                <span class="text-gray-600">Prochain objectif</span>
+                            </div>
+                            <span class="font-medium text-math-secondary">Géométrie</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-math-light px-6 py-3 border-t border-gray-100">
+                    <button class="text-math-primary hover:text-math-secondary font-medium flex items-center justify-center w-full">
+                        Voir le détail <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recommended Section with improved cards -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 glow-hover">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-math-dark">Recommandé pour vous</h2>
+                        <button class="text-math-primary text-sm font-medium">Tout voir</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 flex items-start space-x-3 transition-all hover:shadow-md">
+                            <div class="bg-blue-100 p-3 rounded-full text-blue-600 shadow-inner">
+                                <i class="fas fa-calculator text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-blue-800">Calcul littéral</h3>
+                                <p class="text-sm text-gray-600">5 exercices progressifs</p>
+                                <div class="mt-2 flex items-center">
+                                    <div class="w-full bg-blue-200 rounded-full h-1.5">
+                                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                    <span class="text-xs text-blue-600 ml-2">60%</span>
+                                </div>
+                                <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                                    Continuer <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-teal-50 border border-green-100 rounded-xl p-4 flex items-start space-x-3 transition-all hover:shadow-md">
+                            <div class="bg-green-100 p-3 rounded-full text-green-600 shadow-inner">
+                                <i class="fas fa-chart-pie text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-green-800">Statistiques</h3>
+                                <p class="text-sm text-gray-600">Nouveau thème à découvrir</p>
+                                <div class="mt-3">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Nouveau</span>
+                                </div>
+                                <button class="mt-2 text-green-600 hover:text-green-800 text-sm font-medium flex items-center">
+                                    Commencer <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100 rounded-xl p-4 flex items-start space-x-3 transition-all hover:shadow-md">
+                            <div class="bg-purple-100 p-3 rounded-full text-purple-600 shadow-inner">
+                                <i class="fas fa-shapes text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-purple-800">Géométrie</h3>
+                                <p class="text-sm text-gray-600">Révision des théorèmes</p>
+                                <div class="mt-2 flex items-center">
+                                    <div class="w-full bg-purple-200 rounded-full h-1.5">
+                                        <div class="bg-purple-600 h-1.5 rounded-full" style="width: 30%"></div>
+                                    </div>
+                                    <span class="text-xs text-purple-600 ml-2">30%</span>
+                                </div>
+                                <button class="mt-2 text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center">
+                                    Réviser <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-100 rounded-xl p-4 flex items-start space-x-3 transition-all hover:shadow-md">
+                            <div class="bg-yellow-100 p-3 rounded-full text-yellow-600 shadow-inner">
+                                <i class="fas fa-medal text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-yellow-800">Problème DNB</h3>
+                                <p class="text-sm text-gray-600">Session 2022 - Métropole</p>
+                                <div class="mt-2 flex items-center">
+                                    <span class="text-xs text-yellow-600"><i class="fas fa-clock mr-1"></i> 25 min</span>
+                                </div>
+                                <button class="mt-2 text-yellow-600 hover:text-yellow-800 text-sm font-medium flex items-center">
+                                    S'entraîner <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Badges & Achievements -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 glow-hover">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-math-dark">Mes badges</h2>
+                        <button class="text-math-primary text-sm font-medium">Tous mes badges</button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Débloquez des badges en progressant dans votre apprentissage</p>
+                    
+                    <div class="grid grid-cols-4 gap-3 text-center">
+                        <div class="p-2">
+                            <div class="bg-yellow-100 text-yellow-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1 shadow-inner">
+                                <i class="fas fa-star text-lg"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Débutant</p>
+                        </div>
+                        <div class="p-2">
+                            <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1 shadow-inner">
+                                <i class="fas fa-bolt text-lg"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Rapide</p>
+                        </div>
+                        <div class="p-2">
+                            <div class="bg-green-100 text-green-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1 shadow-inner">
+                                <i class="fas fa-check-double text-lg"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Précis</p>
+                        </div>
+                        <div class="p-2 relative">
+                            <div class="bg-gray-200 text-gray-400 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1">
+                                <i class="fas fa-lock text-lg"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Expert</p>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-xs font-bold text-gray-500 bg-white px-1 rounded">5/10</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-math-light rounded-lg p-3 border border-math-light">
+                        <div class="flex items-center">
+                            <div class="bg-math-primary text-white p-2 rounded-full mr-3">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm text-math-dark">Prochain badge</h4>
+                                <p class="text-xs text-gray-600">Complétez 3 thèmes pour débloquer "Explorateur"</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                            <div class="bg-math-primary h-1.5 rounded-full" style="width: 66%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Themes Grid with improved visual design -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 mb-8">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-math-dark">Tous les thèmes du programme</h2>
+                    <div class="relative">
+                        <select class="appearance-none bg-math-light border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-math-primary focus:border-transparent text-sm">
+                            <option>Trier par : Progression</option>
+                            <option>Trier par : Difficulté</option>
+                            <option>Trier par : Alphabétique</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                    <!-- Theme Card 1 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-blue-100 to-blue-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-calculator text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Calcul numérique</h3>
+                        <p class="text-xs text-gray-500 mb-2">10 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <span class="text-xs text-blue-600 mt-1 block">75% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 2 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-green-100 to-green-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-x text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Calcul littéral</h3>
+                        <p class="text-xs text-gray-500 mb-2">8 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-green-600 h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <span class="text-xs text-green-600 mt-1 block">60% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 3 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-purple-100 to-purple-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-shapes text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Géométrie</h3>
+                        <p class="text-xs text-gray-500 mb-2">12 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: 40%"></div>
+                        </div>
+                        <span class="text-xs text-purple-600 mt-1 block">40% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 4 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-yellow-100 to-yellow-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-chart-pie text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Statistiques</h3>
+                        <p class="text-xs text-gray-500 mb-2">6 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-yellow-600 h-2 rounded-full" style="width: 30%"></div>
+                        </div>
+                        <span class="text-xs text-yellow-600 mt-1 block">30% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 5 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-red-100 to-red-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-percentage text-red-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Probabilités</h3>
+                        <p class="text-xs text-gray-500 mb-2">7 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: 65%"></div>
+                        </div>
+                        <span class="text-xs text-red-600 mt-1 block">65% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 6 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-function text-indigo-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Fonctions</h3>
+                        <p class="text-xs text-gray-500 mb-2">9 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 50%"></div>
+                        </div>
+                        <span class="text-xs text-indigo-600 mt-1 block">50% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 7 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-pink-100 to-pink-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-equals text-pink-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Équations</h3>
+                        <p class="text-xs text-gray-500 mb-2">8 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-pink-600 h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                        <span class="text-xs text-pink-600 mt-1 block">45% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 8 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-teal-100 to-teal-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-ruler-combined text-teal-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Pythagore</h3>
+                        <p class="text-xs text-gray-500 mb-2">5 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-teal-600 h-2 rounded-full" style="width: 70%"></div>
+                        </div>
+                        <span class="text-xs text-teal-600 mt-1 block">70% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 9 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-orange-100 to-orange-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-ruler text-orange-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Thalès</h3>
+                        <p class="text-xs text-gray-500 mb-2">6 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-orange-600 h-2 rounded-full" style="width: 55%"></div>
+                        </div>
+                        <span class="text-xs text-orange-600 mt-1 block">55% complété</span>
+                    </div>
+                    
+                    <!-- Theme Card 10 -->
+                    <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
+                        <div class="bg-gradient-to-br from-gray-100 to-gray-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i class="fas fa-brain text-gray-600 text-xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-800 mb-1">Problèmes DNB</h3>
+                        <p class="text-xs text-gray-500 mb-2">15 exercices</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-gray-600 h-2 rounded-full" style="width: 35%"></div>
+                        </div>
+                        <span class="text-xs text-gray-600 mt-1 block">35% complété</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-math-dark mb-4">Votre activité récente</h2>
+                
+                <div class="space-y-4">
+                    <!-- Activity Item 1 -->
+                    <div class="flex items-start">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-full mr-4">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-medium text-gray-800">Exercice réussi</h4>
+                                <span class="text-xs text-gray-500">Aujourd'hui, 14:32</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Calcul littéral - Développement d'expressions</p>
+                            <div class="mt-1">
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Score: 100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Item 2 -->
+                    <div class="flex items-start">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-full mr-4">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-medium text-gray-800">Cours consulté</h4>
+                                <span class="text-xs text-gray-500">Hier, 18:15</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Théorème de Pythagore - Applications</p>
+                            <div class="mt-1">
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">15 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Item 3 -->
+                    <div class="flex items-start">
+                        <div class="bg-yellow-100 text-yellow-600 p-2 rounded-full mr-4">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-medium text-gray-800">Badge débloqué</h4>
+                                <span class="text-xs text-gray-500">Hier, 16:42</span>
+                            </div>
+                            <p class="text-sm text-gray-600">"Calculateur Pro" - 10 exercices de calcul réussis</p>
+                            <div class="mt-1">
+                                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Nouveau</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="w-full mt-6 text-math-primary hover:text-math-secondary font-medium flex items-center justify-center py-2 border border-dashed border-gray-300 rounded-lg">
+                    <i class="fas fa-history mr-2"></i> Voir toute l'activité
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Assistant Button with enhanced design -->
+    <div class="fixed bottom-6 right-6 z-20">
+        <button id="aiAssistantBtn" class="relative bg-gradient-to-br from-math-primary to-math-secondary text-white w-16 h-16 rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-110 group">
+            <i class="fas fa-robot text-2xl group-hover:animate-bounce"></i>
+            <span class="absolute -top-1 -right-1 bg-math-accent text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">1</span>
+        </button>
+    </div>
+
+    <!-- AI Assistant Panel with improved design -->
+    <div id="aiAssistantPanel" class="fixed bottom-28 right-6 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 hidden transform transition-all duration-300 ease-in-out z-20">
+        <div class="bg-gradient-to-r from-math-primary to-math-secondary text-white px-4 py-3 rounded-t-xl flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="relative">
+                    <i class="fas fa-robot text-lg mr-2"></i>
+                    <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full"></div>
+                </div>
+                <h3 class="font-medium">Assistant MathMaster</h3>
+            </div>
+            <button id="closeAIPanel" class="text-white hover:text-indigo-200 transform hover:rotate-90 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-4 h-64 overflow-y-auto" id="aiChatContainer">
+            <div class="ai-message bg-math-light text-gray-800 p-3 rounded-lg mb-3 relative">
+                <div class="absolute -left-1.5 top-3 w-3 h-3 bg-math-light transform rotate-45"></div>
+                <p>Bonjour ! Je suis ton assistant en mathématiques. Comment puis-je t'aider aujourd'hui ?</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <button class="text-xs bg-white text-math-primary px-2 py-1 rounded-full border border-math-light hover:bg-math-primary hover:text-white transition">
+                        Pythagore
+                    </button>
+                    <button class="text-xs bg-white text-math-primary px-2 py-1 rounded-full border border-math-light hover:bg-math-primary hover:text-white transition">
+                        Calcul littéral
+                    </button>
+                    <button class="text-xs bg-white text-math-primary px-2 py-1 rounded-full border border-math-light hover:bg-math-primary hover:text-white transition">
+                        Problème DNB
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-200 p-3 bg-math-light rounded-b-xl">
+            <div class="flex space-x-2">
+                <input type="text" id="aiMessageInput" placeholder="Pose ta question..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-math-primary focus:border-transparent text-sm">
+                <button id="sendAIMessage" class="bg-math-primary hover:bg-math-secondary text-white w-10 h-10 rounded-lg transition flex items-center justify-center">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">Exemple : "Explique-moi le théorème de Thalès"</p>
+        </div>
+    </div>
+
+    <!-- Statistics Modal with enhanced design -->
+    <div id="statsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-math-primary to-math-secondary text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
+                <h3 class="text-xl font-semibold">Vos statistiques détaillées</h3>
+                <button id="closeStatsModal" class="text-white hover:text-indigo-200 transform hover:rotate-90 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-chart-bar text-math-primary mr-2"></i> Progression par thème
+                        </h4>
+                        <canvas id="themeProgressChart" height="250"></canvas>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-percentage text-math-secondary mr-2"></i> Taux de réussite
+                        </h4>
+                        <canvas id="successRateChart" height="250"></canvas>
+                    </div>
+                </div>
+                
+                <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                    <i class="fas fa-history text-math-accent mr-2"></i> Historique des résultats
+                </h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-math-dark text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Thème</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Exercices</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-math-light">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">15/06/2023</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Théorème de Pythagore</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">8</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-green-600 font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i> 87%
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-math-light">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">10/06/2023</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Calcul littéral</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">6</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-yellow-600 font-medium">
+                                    <i class="fas fa-check mr-1"></i> 65%
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-math-light">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">05/06/2023</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Fonctions</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">5</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-red-600 font-medium">
+                                    <i class="fas fa-times mr-1"></i> 42%
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-math-light">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">01/06/2023</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Probabilités</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">7</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-green-600 font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i> 78%
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-8">
+                    <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-bullseye text-math-accent mr-2"></i> Compétences à travailler
+                    </h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-xmark text-red-400 mr-2"></i> Résolution d'équations
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">45%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-ruler text-blue-400 mr-2"></i> Utilisation de Thalès
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">55%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-orange-400 to-orange-500 h-2 rounded-full" style="width: 55%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-chart-line text-purple-400 mr-2"></i> Interprétation graphique
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">38%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-red-400 to-red-500 h-2 rounded-full" style="width: 38%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-math-light px-6 py-3 border-t border-gray-200 rounded-b-xl">
+                <button class="text-math-primary hover:text-math-secondary font-medium flex items-center justify-center w-full">
+                    <i class="fas fa-download mr-2"></i> Exporter mes statistiques
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Modal with improved design -->
+    <div id="exerciseModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-math-primary to-math-secondary text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-semibold">Exercice - Calcul littéral</h3>
+                    <div class="flex items-center mt-1">
+                        <span class="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full mr-2">
+                            <i class="fas fa-clock mr-1"></i> 5 min
+                        </span>
+                        <span class="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                            <i class="fas fa-bolt mr-1"></i> Difficulté : Moyenne
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-white hover:text-indigo-200" title="Aide">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button id="closeExerciseModal" class="text-white hover:text-indigo-200 transform hover:rotate-90 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="font-medium text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-pencil-alt text-math-primary mr-2"></i> Énoncé :
+                    </h4>
+                    <div class="bg-math-light p-4 rounded-lg border border-gray-200">
+                        <p class="text-gray-700 mb-2">
+                            Développer et réduire l'expression suivante : 
+                        </p>
+                        <p class="math-formula text-lg font-medium">
+                            A = 3(2x + 5) - (4x - 7)
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-medium text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-edit text-math-secondary mr-2"></i> Votre réponse :
+                    </h4>
+                    <textarea class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-math-primary focus:border-transparent" rows="3" placeholder="Écrivez votre réponse ici..."></textarea>
+                    <div class="flex justify-end mt-1">
+                        <button class="text-xs text-math-primary hover:text-math-secondary flex items-center">
+                            <i class="fas fa-keyboard mr-1"></i> Insérer des symboles mathématiques
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <button id="showSolution" class="text-math-primary hover:text-math-secondary font-medium flex items-center group">
+                        <i class="fas fa-lightbulb mr-2 text-yellow-500 group-hover:animate-pulse"></i> Voir la solution
+                    </button>
+                    <div class="flex space-x-3">
+                        <button class="bg-white border border-math-primary text-math-primary px-6 py-2 rounded-lg font-medium hover:bg-math-light transition flex items-center">
+                            <i class="fas fa-redo mr-2"></i> Réessayer
+                        </button>
+                        <button class="btn-gradient text-white px-6 py-2 rounded-lg font-medium shadow-md flex items-center">
+                            <i class="fas fa-check mr-2"></i> Valider
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="solutionSection" class="mt-6 hidden">
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
+                        <h4 class="font-medium text-green-800 mb-2 flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i> Correction :
+                        </h4>
+                        <div class="math-formula text-green-700 space-y-2">
+                            <p>A = 3(2x + 5) - (4x - 7)</p>
+                            <p>A = 3×2x + 3×5 - 4x + 7</p>
+                            <p>A = 6x + 15 - 4x + 7</p>
+                            <p class="font-bold">A = 2x + 22</p>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-green-700">
+                            <i class="fas fa-info-circle mr-2"></i> N'oubliez pas la règle de distributivité et les signes !
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic Modal with enhanced design -->
+    <div id="diagnosticModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
+                <h3 class="text-xl font-semibold">Diagnostic initial</h3>
+                <button id="closeDiagnosticModal" class="text-white hover:text-blue-200 transform hover:rotate-90 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-6 text-center">
+                    <div class="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                        <i class="fas fa-clipboard-check text-blue-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-medium text-gray-800 mb-2">Test de positionnement</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto">
+                        Ce diagnostic comprend 10 questions couvrant les principaux thèmes du programme de 3ème. 
+                        Vos résultats permettront de personnaliser votre parcours d'apprentissage.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Durée estimée</h4>
+                                <p class="text-sm text-gray-600">15-20 minutes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Format</h4>
+                                <p class="text-sm text-gray-600">QCM et questions ouvertes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Thèmes couverts</h4>
+                                <p class="text-sm text-gray-600">6 domaines clés du programme</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Résultats</h4>
+                                <p class="text-sm text-gray-600">Analyse détaillée par compétence</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button id="startDiagnosticTest" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-10 py-4 rounded-lg text-lg font-medium shadow-lg transition-all transform hover:scale-105 flex items-center mx-auto">
+                        <i class="fas fa-rocket mr-3"></i> Commencer le diagnostic
+                    </button>
+                    <p class="text-sm text-gray-500 mt-3">Vous pourrez quitter à tout moment et reprendre plus tard</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Details Modal with enhanced design -->
+    <div id="themeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-math-primary to-math-secondary text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
+                <h3 class="text-xl font-semibold">Théorème de Pythagore</h3>
+                <button id="closeThemeModal" class="text-white hover:text-indigo-200 transform hover:rotate-90 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row gap-6 mb-8">
+                    <div class="md:w-2/3">
+                        <div class="mb-6">
+                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-book text-math-primary mr-2"></i> Cours
+                            </h4>
+                            <div class="bg-math-light border border-gray-200 rounded-xl p-4">
+                                <p class="text-gray-700 mb-3">
+                                    Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.
+                                </p>
+                                <div class="bg-white p-4 rounded-lg border border-gray-200 text-center max-w-xs mx-auto">
+                                    <p class="math-formula text-lg font-bold">AB² + AC² = BC²</p>
+                                    <div class="flex justify-center mt-3">
+                                        <svg width="180" height="120" viewBox="0 0 180 120">
+                                            <polygon points="40,100 40,40 150,100" fill="#EFF6FF" stroke="#6366f1" stroke-width="2"/>
+                                            <rect x="40" y="40" width="110" height="60" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="5,5"/>
+                                            <text x="35" y="35" font-family="Inter" font-size="12" fill="#6366f1">A</text>
+                                            <text x="35" y="105" font-family="Inter" font-size="12" fill="#6366f1">B</text>
+                                            <text x="155" y="105" font-family="Inter" font-size="12" fill="#6366f1">C</text>
+                                            <text x="50" y="75" font-family="Inter" font-size="10" fill="#1e1b4b">AB</text>
+                                            <text x="90" y="50" font-family="Inter" font-size="10" fill="#1e1b4b">AC</text>
+                                            <text x="95" y="90" font-family="Inter" font-size="10" fill="#1e1b4b">BC</text>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Exemple
+                            </h4>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                                <p class="text-gray-700 mb-2 font-medium">
+                                    Soit un triangle ABC rectangle en A avec AB = 6 cm et AC = 8 cm. Calculer BC.
+                                </p>
+                                <div class="math-formula text-gray-700 space-y-2 mt-3">
+                                    <p>D'après le théorème de Pythagore :</p>
+                                    <p>BC² = AB² + AC² = 6² + 8² = 36 + 64 = 100</p>
+                                    <p class="font-bold">Donc BC = √100 = 10 cm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-1/3">
+                        <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-6">
+                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-chart-line text-math-primary mr-2"></i> Votre progression
+                            </h4>
+                            <div class="flex justify-center mb-4">
+                                <div class="relative w-32 h-32">
+                                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                                        <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                        <circle class="progress-ring__circle text-math-primary" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="75.36" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-3xl font-bold text-math-dark">70%</span>
+                                        <span class="text-sm text-gray-500">complété</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i> Exercices
+                                    </span>
+                                    <span class="font-medium">7/10</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 flex items-center">
+                                        <i class="fas fa-percentage text-blue-500 mr-2"></i> Réussite
+                                    </span>
+                                    <span class="font-medium text-green-600">85%</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 flex items-center">
+                                        <i class="fas fa-calendar text-purple-500 mr-2"></i> Dernière pratique
+                                    </span>
+                                    <span class="font-medium">15/06/23</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-math-light border border-gray-200 rounded-xl p-4">
+                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-bullseye text-math-accent mr-2"></i> Actions
+                            </h4>
+                            <button class="w-full btn-gradient text-white py-3 px-4 rounded-lg mb-3 shadow-md transition-all transform hover:scale-[1.02] flex items-center justify-center">
+                                <i class="fas fa-play mr-2"></i> S'entraîner
+                            </button>
+                            <button class="w-full bg-white border border-math-primary text-math-primary py-3 px-4 rounded-lg mb-3 shadow-sm hover:bg-math-light transition-all flex items-center justify-center">
+                                <i class="fas fa-redo mr-2"></i> Recommencer
+                            </button>
+                            <button class="w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-all flex items-center justify-center">
+                                <i class="fas fa-file-alt mr-2"></i> Annales DNB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i> Exercices recommandés
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white border border-blue-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer">
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-3 rounded-full mr-3 text-blue-600">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-blue-800">Application directe</h5>
+                                    <p class="text-sm text-gray-600">3 exercices progressifs</p>
+                                    <div class="mt-2 flex items-center text-xs text-blue-600">
+                                        <i class="fas fa-check-circle mr-1"></i> 80% de réussite
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-purple-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer">
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-3 rounded-full mr-3 text-purple-600">
+                                    <i class="fas fa-shapes"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-purple-800">Problèmes géométriques</h5>
+                                    <p class="text-sm text-gray-600">2 situations complexes</p>
+                                    <div class="mt-2 flex items-center text-xs text-purple-600">
+                                        <i class="fas fa-clock mr-1"></i> 10-15 min
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-green-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer">
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-3 rounded-full mr-3 text-green-600">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-green-800">Réciproque du théorème</h5>
+                                    <p class="text-sm text-gray-600">4 exercices variés</p>
+                                    <div class="mt-2 flex items-center text-xs text-green-600">
+                                        <i class="fas fa-chart-line mr-1"></i> 65% de réussite
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-yellow-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer">
+                            <div class="flex items-start">
+                                <div class="bg-yellow-100 p-3 rounded-full mr-3 text-yellow-600">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-yellow-800">DNB 2021 - Métropole</h5>
+                                    <p class="text-sm text-gray-600">Problème complet</p>
+                                    <div class="mt-2 flex items-center text-xs text-yellow-600">
+                                        <i class="fas fa-award mr-
+</html>
