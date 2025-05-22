@@ -1,12 +1,15 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathMaster 3ème - Préparation au DNB</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="description" content="MathMaster 3ème - Plateforme d'apprentissage des mathématiques pour la préparation au DNB">
+    <meta name="keywords" content="mathématiques, collège, 3ème, DNB, brevet, cours, exercices">
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/tailwindlabs/tailwindcss/docs/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
+      window.tailwind.config = {
         theme: {
           extend: {
             colors: {
@@ -28,6 +31,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
     <style>
@@ -138,7 +142,7 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="relative">
-                    <i class="fas fa-square-root-alt text-3xl text-math-accent waving"></i>
+                    <i class="fas fa-square-root-variable text-3xl text-math-accent waving"></i>
                     <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full"></div>
                 </div>
                 <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-math-primary via-math-secondary to-math-accent bg-clip-text text-transparent">
@@ -436,7 +440,7 @@
                     <!-- Theme Card 2 -->
                     <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
                         <div class="bg-gradient-to-br from-green-100 to-green-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
-                            <i class="fas fa-x text-green-600 text-xl"></i>
+                            <i class="fas fa-superscript text-green-600 text-xl"></i>
                         </div>
                         <h3 class="font-medium text-gray-800 mb-1">Calcul littéral</h3>
                         <p class="text-xs text-gray-500 mb-2">8 exercices</p>
@@ -488,7 +492,7 @@
                     <!-- Theme Card 6 -->
                     <div class="theme-card bg-white border border-gray-200 rounded-xl p-4 text-center transition-all duration-300 cursor-pointer hover:bg-math-light">
                         <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3 shadow-inner">
-                            <i class="fas fa-function text-indigo-600 text-xl"></i>
+                            <i class="fas fa-f text-indigo-600 text-xl"></i>
                         </div>
                         <h3 class="font-medium text-gray-800 mb-1">Fonctions</h3>
                         <p class="text-xs text-gray-500 mb-2">9 exercices</p>
@@ -1122,5 +1126,289 @@
                                     <h5 class="font-medium text-yellow-800">DNB 2021 - Métropole</h5>
                                     <p class="text-sm text-gray-600">Problème complet</p>
                                     <div class="mt-2 flex items-center text-xs text-yellow-600">
-                                        <i class="fas fa-award mr-
+                                        <i class="fas fa-award mr-1"></i> Complet et détaillé
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // User Dropdown Toggle
+            const userBtn = document.getElementById('userBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userBtn && userDropdown) {
+                userBtn.addEventListener('click', function() {
+                    userDropdown.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // AI Assistant Panel Toggle
+            const aiAssistantBtn = document.getElementById('aiAssistantBtn');
+            const aiAssistantPanel = document.getElementById('aiAssistantPanel');
+            const closeAIPanel = document.getElementById('closeAIPanel');
+            
+            if (aiAssistantBtn && aiAssistantPanel && closeAIPanel) {
+                aiAssistantBtn.addEventListener('click', function() {
+                    aiAssistantPanel.classList.remove('hidden');
+                    aiAssistantPanel.classList.add('slide-in');
+                });
+                
+                closeAIPanel.addEventListener('click', function() {
+                    aiAssistantPanel.classList.add('hidden');
+                });
+            }
+
+            // Chat functionality
+            const aiMessageInput = document.getElementById('aiMessageInput');
+            const sendAIMessage = document.getElementById('sendAIMessage');
+            const aiChatContainer = document.getElementById('aiChatContainer');
+
+            if (aiMessageInput && sendAIMessage && aiChatContainer) {
+                sendAIMessage.addEventListener('click', sendMessage);
+                aiMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+
+            function sendMessage() {
+                if (aiMessageInput.value.trim() === '') return;
+
+                // Create user message
+                const userDiv = document.createElement('div');
+                userDiv.className = 'mb-3 flex justify-end';
+                userDiv.innerHTML = `
+                    <div class="bg-math-primary text-white p-3 rounded-lg max-w-[80%] relative">
+                        <div class="absolute -right-1.5 top-3 w-3 h-3 bg-math-primary transform rotate-45"></div>
+                        <p>${aiMessageInput.value}</p>
+                    </div>
+                `;
+                aiChatContainer.appendChild(userDiv);
+                
+                // Scroll to bottom
+                aiChatContainer.scrollTop = aiChatContainer.scrollHeight;
+                
+                // Clear input
+                const userQuestion = aiMessageInput.value;
+                aiMessageInput.value = '';
+                
+                // Create typing indicator
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'ai-message bg-math-light text-gray-800 p-3 rounded-lg mb-3 relative';
+                typingDiv.innerHTML = '<div class="dot-typing"><span>.</span><span>.</span><span>.</span></div>';
+                aiChatContainer.appendChild(typingDiv);
+                
+                // Simulate response after a delay
+                setTimeout(() => {
+                    aiChatContainer.removeChild(typingDiv);
+                    
+                    // Add AI response
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'ai-message bg-math-light text-gray-800 p-3 rounded-lg mb-3 relative fade-in';
+                    
+                    // Simple response logic based on keywords
+                    let response = "";
+                    
+                    if (userQuestion.toLowerCase().includes('pythagore')) {
+                        response = "Le théorème de Pythagore énonce que dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés. Si tu as un triangle rectangle avec les côtés a, b, et c (où c est l'hypoténuse), alors a² + b² = c².";
+                    } else if (userQuestion.toLowerCase().includes('thalès')) {
+                        response = "Le théorème de Thalès dit que si deux droites sont coupées par des droites parallèles, alors les segments déterminés sur ces droites sont proportionnels.";
+                    } else if (userQuestion.toLowerCase().includes('calcul') || userQuestion.toLowerCase().includes('littéral')) {
+                        response = "Le calcul littéral consiste à manipuler des expressions avec des lettres. Les opérations principales sont la réduction, le développement et la factorisation.";
+                    } else {
+                        response = "Je suis là pour t'aider dans tes révisions de mathématiques. N'hésite pas à me poser une question sur un théorème, une formule ou un exercice qui te pose problème!";
+                    }
+                    
+                    responseDiv.innerHTML = `
+                        <div class="absolute -left-1.5 top-3 w-3 h-3 bg-math-light transform rotate-45"></div>
+                        <p>${response}</p>
+                    `;
+                    aiChatContainer.appendChild(responseDiv);
+                    
+                    // Scroll to bottom
+                    aiChatContainer.scrollTop = aiChatContainer.scrollHeight;
+                }, 1500);
+            }
+            
+            // Stats Modal Toggle
+            const statsBtn = document.getElementById('statsBtn');
+            const statsModal = document.getElementById('statsModal');
+            const closeStatsModal = document.getElementById('closeStatsModal');
+            
+            if (statsBtn && statsModal && closeStatsModal) {
+                statsBtn.addEventListener('click', function() {
+                    statsModal.classList.remove('hidden');
+                    initCharts();
+                });
+                
+                closeStatsModal.addEventListener('click', function() {
+                    statsModal.classList.add('hidden');
+                });
+            }
+            
+            // Exercise Modal Functions
+            const showSolution = document.getElementById('showSolution');
+            const solutionSection = document.getElementById('solutionSection');
+            const closeExerciseModal = document.getElementById('closeExerciseModal');
+            const exerciseModal = document.getElementById('exerciseModal');
+            
+            if (showSolution && solutionSection) {
+                showSolution.addEventListener('click', function() {
+                    solutionSection.classList.toggle('hidden');
+                });
+            }
+            
+            if (closeExerciseModal && exerciseModal) {
+                closeExerciseModal.addEventListener('click', function() {
+                    exerciseModal.classList.add('hidden');
+                });
+            }
+            
+            // Diagnostic Modal Toggle
+            const startDiagnostic = document.getElementById('startDiagnostic');
+            const diagnosticModal = document.getElementById('diagnosticModal');
+            const closeDiagnosticModal = document.getElementById('closeDiagnosticModal');
+            
+            if (startDiagnostic && diagnosticModal && closeDiagnosticModal) {
+                startDiagnostic.addEventListener('click', function() {
+                    diagnosticModal.classList.remove('hidden');
+                });
+                
+                closeDiagnosticModal.addEventListener('click', function() {
+                    diagnosticModal.classList.add('hidden');
+                });
+            }
+            
+            // Theme Modal Toggle
+            const closeThemeModal = document.getElementById('closeThemeModal');
+            const themeModal = document.getElementById('themeModal');
+            
+            if (closeThemeModal && themeModal) {
+                // Example to open the theme modal from any theme card
+                document.querySelectorAll('.theme-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        themeModal.classList.remove('hidden');
+                    });
+                });
+                
+                closeThemeModal.addEventListener('click', function() {
+                    themeModal.classList.add('hidden');
+                });
+            }
+            
+            // Click outside to close modals
+            window.addEventListener('click', function(e) {
+                if (statsModal && e.target === statsModal) {
+                    statsModal.classList.add('hidden');
+                }
+                if (exerciseModal && e.target === exerciseModal) {
+                    exerciseModal.classList.add('hidden');
+                }
+                if (diagnosticModal && e.target === diagnosticModal) {
+                    diagnosticModal.classList.add('hidden');
+                }
+                if (themeModal && e.target === themeModal) {
+                    themeModal.classList.add('hidden');
+                }
+            });
+
+            // Initialize charts
+            function initCharts() {
+                if (window.Chart && document.getElementById('themeProgressChart')) {
+                    // Theme Progress Chart
+                    const themeProgressCtx = document.getElementById('themeProgressChart').getContext('2d');
+                    new Chart(themeProgressCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Calcul num.', 'Calcul lit.', 'Géométrie', 'Stats', 'Probabilités', 'Fonctions'],
+                            datasets: [{
+                                label: 'Progression (%)',
+                                data: [75, 60, 40, 30, 65, 50],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.7)',
+                                    'rgba(16, 185, 129, 0.7)',
+                                    'rgba(139, 92, 246, 0.7)',
+                                    'rgba(245, 158, 11, 0.7)',
+                                    'rgba(239, 68, 68, 0.7)',
+                                    'rgba(99, 102, 241, 0.7)'
+                                ],
+                                borderColor: [
+                                    'rgb(59, 130, 246)',
+                                    'rgb(16, 185, 129)',
+                                    'rgb(139, 92, 246)',
+                                    'rgb(245, 158, 11)',
+                                    'rgb(239, 68, 68)',
+                                    'rgb(99, 102, 241)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Success Rate Chart
+                    const successRateCtx = document.getElementById('successRateChart').getContext('2d');
+                    new Chart(successRateCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Réussi', 'En cours', 'À améliorer'],
+                            datasets: [{
+                                data: [65, 20, 15],
+                                backgroundColor: [
+                                    'rgba(52, 211, 153, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(251, 113, 133, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgb(52, 211, 153)',
+                                    'rgb(59, 130, 246)',
+                                    'rgb(251, 113, 133)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
 </html>
