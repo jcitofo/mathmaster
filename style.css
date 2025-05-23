@@ -1,0 +1,244 @@
+/* MathMaster 3ème - Styles personnalisés */
+
+:root {
+  --color-math-primary: #6366f1;
+  --color-math-secondary: #8b5cf6;
+  --color-math-accent: #ec4899;
+  --color-math-dark: #1e1b4b;
+  --color-math-light: #e0e7ff;
+}
+
+/* Police personnalisée */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-math-light);
+  color: #333;
+}
+
+/* En-tête */
+header {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.waving {
+  animation: wave 3s ease-in-out infinite;
+}
+
+/* Cercle de progression */
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.5s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Cartes flippantes */
+.flip-card-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Animations d'entrée */
+.slide-in {
+  animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Formules mathématiques */
+.math-formula {
+  font-family: 'Roboto Slab', serif;
+  background: rgba(224, 231, 255, 0.5);
+  border-left: 4px solid var(--color-math-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0;
+}
+
+/* Cartes de thèmes */
+.theme-card {
+  transition: all 0.3s ease;
+}
+
+.theme-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Effets de survol */
+.glow-hover:hover {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+/* Boutons avec dégradé */
+.btn-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  background-size: 200% auto;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+}
+
+/* Arrière-plan de la section héro */
+.hero-pattern {
+  background-image: radial-gradient(circle at 25% 25%, rgba(224, 231, 255, 0.5) 0%, rgba(224, 231, 255, 0) 50%);
+}
+
+/* Style pour le chat assistant */
+.ai-message {
+  max-width: 85%;
+}
+
+.dot-typing {
+  display: inline-block;
+}
+
+.dot-typing span {
+  animation: typingAnimation 1.4s infinite;
+  display: inline-block;
+  opacity: 0;
+  padding-right: 2px;
+}
+
+.dot-typing span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot-typing span:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.dot-typing span:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes typingAnimation {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Confettis */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #f00;
+  opacity: 0;
+}
+
+/* Styles pour le diagnostic */
+.diagnostic-question {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.diagnostic-option {
+  border: 2px solid #ddd;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.diagnostic-option:hover {
+  border-color: var(--color-math-primary);
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.diagnostic-option.selected {
+  border-color: var(--color-math-primary);
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.diagnostic-option.correct {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.diagnostic-option.incorrect {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Adaptation pour les appareils mobiles */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .theme-card {
+    padding: 0.75rem;
+  }
+  
+  .theme-card .rounded-full {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .diagnostic-question {
+    padding: 1rem;
+  }
+}
